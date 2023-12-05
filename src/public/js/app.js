@@ -1,7 +1,7 @@
 const socket = io(); 
 const welcome = document.getElementById("welcome")
-const form = welcome.querySelector("form")
 const room = document.getElementById("room")
+const form = welcome.querySelector("form")
 
 room.hidden = true
 let roomName;
@@ -42,7 +42,7 @@ function showRoom(){
 
 function handleRoomSubmit(event){
     event.preventDefault();
-    const input = form.querySelector("input")
+    const input = form.querySelector("input") // querySelector: 첫번째로 일치하는 요소를 준다. 
     socket.emit("enter_room", input.value, showRoom);
     roomName = input.value 
     input.value = ""
@@ -57,44 +57,13 @@ socket.on("bye",(left)=>{
 })
 socket.on("new_message", addMessage);
 
-
-// Websocket Code
-// const messageList = document.querySelector('ul')
-// const nickForm = document.querySelector('#nick')
-// const messageForm = document.querySelector('#message')
-
-// const socket = new WebSocket(`ws://${window.location.host}`) // http://localhost:3000
-// socket.addEventListener("open", ()=>{ console.log("Connected to Server ✅"); })
-// socket.addEventListener("message", (message)=>{ 
-//     const li = document.createElement('li');
-//     li.innerText = message.data; 
-//     messageList.append(li)
-// })
-// socket.addEventListener("close", ()=>{ console.log("Disconnected to Server ❌");})
-
-// function makeMessage(type, payload){
-//     const msg = {type, payload}
-//     return JSON.stringify(msg)
-// }
-
-// // 브라우저에서 받은 메세지를 바로 표출 (backend에게 전달후 재전달받은 것을 표출하지 않음)
-// // 입력받은 이름이 아닌 "You"로 표출
-// function handleSubmit(event){
-//     event.preventDefault()
-//     const input = messageForm.querySelector('input');
-//     socket.send(makeMessage("new_message", input.value))
-//     const li = document.createElement('li');
-//     li.innerText = `You : ${input.value}`;  
-//     messageList.append(li)
-//     input.value = "";
-// }
-
-// function handleNickSubmit(event){
-//     event.preventDefault()
-//     const input = nickForm.querySelector('input');
-//     socket.send(makeMessage("nickname", input.value))
-//     input.value = "";
-// }
-
-// messageForm.addEventListener("submit", handleSubmit)
-// nickForm.addEventListener("submit", handleNickSubmit)
+socket.on("room_change", (rooms)=> {
+    const roomList = welcome.querySelector("ul")
+    roomList.innerHTML = "";
+    if(rooms.length === 0) return // painting시 목록이 비어있으면 아무것도 안한다.
+    rooms.forEach((room)=>{
+        const li = document.createElement("li")
+        li.innerText = room;
+        roomList.append(li);
+    })
+});
